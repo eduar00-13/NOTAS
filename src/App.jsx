@@ -6,7 +6,10 @@ function App() {
     titulo: "",
     fecha: "",
     nota: "",
-  });
+  })  ;
+
+  const initialState = JSON.parse(localStorage.getItem("notas")) || [];
+  const [notas, setNotas] = useState(initialState)
 
   const handleInputChange = (event) => {
     setInputState({
@@ -24,18 +27,64 @@ function App() {
       nota: "",
     });
   }
-  
+  let arregloNotas = JSON.parse(localStorage.getItem("notas")) || [];
+
   const handleClickGuardar = () =>{
-    let arregloNotas = JSON.parse(localStorage.getItem("notas")) || []
-    arregloNotas.push(inputState)
-    localStorage.setItem("notas", JSON.stringify(arregloNotas));
+    setNotas([...notas, inputState]);
+    localStorage.setItem("notas", JSON.stringify(notas));
     handleResetClick();
   };
+
+  const handleBorrarNota = (index) => {
+    const nuevoArreglo = []
+    
+    notas.forEach((nota, i) => {
+      if (index !== i){
+        nuevoArreglo.push(nota)
+      }
+    });
+
+  localStorage.setItem("notas", JSON.stringify(nuevoArreglo));
+  setNotas([...nuevoArreglo]);
+   };
   return (
+    <div>
     <div className="App container">
       <div className="row">
         <div className="col">
           <h3>Lista</h3>
+        {
+          arregloNotas.length === 0 ?
+          "No tienes notas guardadas por el momento. Puedes crear una en el formulario"
+          : (
+            <ol>
+            {arregloNotas.map((item, index) => {
+              return (
+               <li key={index}>
+                {item.titulo}({item.fecha})&nbsp;
+                <i className="bi bi-x-circle-fill" 
+                onClick={() => handleBorrarNota(index)} 
+                style={{color:"red", fontSize: "1rem", cursor: "pointer"}}></i>
+                </li>
+                );
+              })}
+          </ol>
+          )
+        }
+        
+        {
+       /* arregloNotas.length !== 0 &&(
+          <ol>
+            {arregloNotas.map((item) => {
+              return (
+               <li>
+                {item.titulo}({item.fecha})
+                </li>
+                );
+              })}
+          </ol>
+        )
+            */}
         </div>
 
         <div className="col">
@@ -57,7 +106,7 @@ function App() {
           <input 
             id = "fecha" 
             name = "fecha" 
-            type = "text" 
+            type = "date" 
             onChange = {handleInputChange}
             value = {inputState.fecha}
             style={{ width:"100%" }}
@@ -66,10 +115,9 @@ function App() {
         <br></br>
         <label htmlfor = "nota" style={{ width:"100%" }}>
           Nota
-          <input 
+          <textarea 
             id = "nota" 
             name = "nota" 
-            type = "text" 
             onChange = {handleInputChange}
             value = {inputState.nota}
             style={{ width:"100%" }}
@@ -102,6 +150,7 @@ function App() {
         </div>
       </div>
     
+    </div>
     </div>
   );
 }
