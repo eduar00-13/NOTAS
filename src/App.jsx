@@ -27,11 +27,12 @@ function App() {
       nota: "",
     });
   }
+
   let arregloNotas = JSON.parse(localStorage.getItem("notas")) || [];
 
   const handleClickGuardar = () =>{
     setNotas([...notas, inputState]);
-    localStorage.setItem("notas", JSON.stringify(notas));
+    localStorage.setItem("notas", JSON.stringify([...notas, inputState]));
     handleResetClick();
   };
 
@@ -47,9 +48,19 @@ function App() {
   localStorage.setItem("notas", JSON.stringify(nuevoArreglo));
   setNotas([...nuevoArreglo]);
    };
+
+   const handleResetLista = () => {
+     setNotas([]);
+     localStorage.setItem("notas", JSON.stringify([]));
+   };
+
+   const handleClickNota = (index) => {
+    setInputState({...notas[index]});
+   };
+
   return (
     <div>
-    <div className="App container">
+    <div className="App container-fluid">
       <div className="row">
         <div className="col">
           <h3>Lista</h3>
@@ -60,7 +71,7 @@ function App() {
             <ol>
             {arregloNotas.map((item, index) => {
               return (
-               <li key={index}>
+               <li key={index} onClick= {()=> handleClickNota(index)}>
                 {item.titulo}({item.fecha})&nbsp;
                 <i className="bi bi-x-circle-fill" 
                 onClick={() => handleBorrarNota(index)} 
@@ -71,7 +82,20 @@ function App() {
           </ol>
           )
         }
-        
+         <div className="ms-2 me-2 mt-2 row">
+         <div className="col">
+        <span className="row ms-1">
+        <button
+        type="button"
+        className="btn btn-outline-danger"
+        onClick={handleResetLista}
+        disabled={notas.length === 0}
+        >
+         BORRAR
+        </button>
+      </span>
+      </div>
+      </div>
         {
        /* arregloNotas.length !== 0 &&(
           <ol>
@@ -128,19 +152,21 @@ function App() {
         <span className="row me-1">
       <button
         type="button"
-        className="btn btn-secondary"
+        className="btn btn-outline-secondary"
         onClick={handleResetClick}
+        disabled={inputState.titulo === "" || inputState.fecha === "" || inputState.nota === ""}
       >
         Limpiar
       </button>
       </span>
       </div>
       <div className="col">
-        <span className="row ms-1">
+        <span className="row me-1">
         <button
         type="button"
-        className="btn btn-primary"
+        className="btn btn-outline-primary"
         onClick={handleClickGuardar}
+        disabled={inputState.titulo === "" || inputState.fecha === "" || inputState.nota === ""}
         >
          GUARDAR
         </button>
